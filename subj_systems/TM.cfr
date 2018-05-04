@@ -1,0 +1,43 @@
+0..* ECU1  1..1
+  0..* version -> integer 1..1
+  0..* display  1..2
+    0..* server -> ECU1 ++ ECU2 1..1
+    0..* version -> integer 1..1
+    0..* options  1..1
+      1..1 size  1..1
+        0..* small  0..1
+        0..* large  0..1
+      0..* cache  0..1
+        0..* size -> integer 1..1
+          0..* fixed  0..1
+0..* ECU2  0..1
+  0..* master -> ECU1 1..1
+  0..* version -> integer 1..1
+  0..* display  1..2
+    0..* server -> ECU1 ++ ECU2 1..1
+    0..* version -> integer 1..1
+    0..* options  1..1
+      1..1 size  1..1
+        0..* small  0..1
+        0..* large  0..1
+      0..* cache  0..1
+        0..* size -> integer 1..1
+          0..* fixed  0..1
+0..* telematicsSystem  1..1
+  1..1 channel  1..1
+    0..* single  0..1
+    0..* dual  0..1
+  0..* extraDisplay  0..1
+  1..1 size  1..1
+    0..* small  0..1
+    0..* large  0..1
+[some ECU1 => (some ECU1.version => ECU1.version.dref = 1 + 2)]
+[some ECU1.display => (ECU1.display.server.dref = ECU1 && no ECU1.display.options.cache)]
+[some ECU1.display => (some ECU1.display.version => ECU1.display.version.dref = 1 + 2)]
+[some ECU1.display.options => (some ECU1.display.options.size.small && some ECU1.display.options.cache => some ECU1.display.options.cache.size.fixed)]
+[some ECU2 => (some ECU2.version => ECU2.version.dref = 1 + 2)]
+[some ECU2.display => (ECU2.display.server.dref = ECU2 && no ECU2.display.options.cache)]
+[some ECU2.display => (some ECU2.display.version => ECU2.display.version.dref = 1 + 2)]
+[some ECU2.display.options => (some ECU2.display.options.size.small && some ECU2.display.options.cache => some ECU2.display.options.cache.size.fixed)]
+[some telematicsSystem => (some telematicsSystem.channel.dual <=> some ECU2 && some telematicsSystem.extraDisplay <=> #ECU1.display = 2 && some telematicsSystem.extraDisplay <=> some ECU2 => #ECU2.display = 2 && some telematicsSystem.size.large <=> no ECU1.display.options.size.small ++ ECU2.display.options.size.small && some telematicsSystem.size.small <=> no ECU1.display.options.size.large ++ ECU2.display.options.size.large)]
+[some telematicsSystem.channel.dual && some telematicsSystem.extraDisplay && some telematicsSystem.size.large]

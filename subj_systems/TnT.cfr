@@ -1,0 +1,38 @@
+abstract Device
+	version -> integer
+	container -> Device ?
+		[this.version >= Device.version]
+		[Device in this.subDevices]
+		[this not in Device.subDevices]
+	subDevices -> Device 0..*
+		[Device in this.container]
+	xor OpMode
+		[if (#(subDevices ++ container) >= 1)
+						then Connected else Single]
+		Single
+		Connected
+
+abstract Printer : Device
+	xor Head 2..*
+		Vertical
+		Horizontal
+	[Vertical <=> !Horizontal]
+
+abstract Scanner : Device
+	[no subDevices]
+
+1..5 PharmTnT_SPL
+	PharmPrinter : Printer 1..*
+		// heads -> Head 5..*
+		[all c : subDevices | c.version >= 3]
+		[subDevices in HSP ++ Scanner]
+	HSP : Printer 1..*
+	ScannerA : Scanner ?
+		[version = 2]
+	ScannerB : Scanner 2
+		[version = 3]
+	PharmCamera : Device 1..*
+		[no subDevices]
+		xor CameraType
+			Omron
+			OSW

@@ -1,0 +1,1 @@
+java -jar boundanalyzer-0.0.1.jar -k BOUND -t CMULT -c ALL -i "/Users/markus/Developer/Projects/Cardygan/boundanalyzer/src/test/resources/clafer/eval/driverPowerWindow.cfr" -o "/Users/markus/Desktop/eval"
