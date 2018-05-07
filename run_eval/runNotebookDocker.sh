@@ -1,1 +1,0 @@
-run -it --rm -p 8888:8888 -v /Users/markus/Work/Research/Projects/Paper/2017-08-28_MODELS2018/MODELS18_Repo/eval/jupyter:/home/jovyan/work jupyter/scipy-notebook

@@ -10,18 +10,22 @@ from pprint import pprint
 from timeit import default_timer as timer
 import csv
 
-claferIG = '/Users/markus/Developer/bin/clafer/claferIG'
-chocosolver = '/Users/markus/Developer/bin/clafer/chocosolver.jar'
-boundanalyzer = '/Users/markus/Developer/Projects/Cardygan/boundanalyzer/build/libs/boundanalyzer-0.0.1.jar'
-boundAnalyzerOutput = "/Users/markus/Work/Research/Projects/Paper/2017-08-28_MODELS2018/MODELS18_Repo/eval/jupyter/data/compEfficiency/compEfficiency.json"
+# UPDATE FOLLOWING PATHS ACCORDING TO YOUR LOCAL SETUP
+claferIG = '<SET_PATH_TO_CLAFER_INSTALLATION>/clafer/claferIG'
+chocosolver = '<SET_PATH_TO_CLAFER_INSTALLATION>/clafer/chocosolver.jar'
+#-----------------------------------------------------------------
+#-----------------------------------------------------------------
+
+boundanalyzer = os.path.abspath('../tool/boundanalyzer-0.0.1.jar')
+boundAnalyzerOutput = os.path.abspath("../eval/raw/compEfficiency/compEfficiency.json")
 runs = 5
 
 def main(arguments):
-    specFileDir = '/Users/markus/Developer/Projects/Cardygan/boundanalyzer/src/test/resources/clafer/eval/'
+    specFileDir = os.path.abspath('../subj_systems')
     specs = ['EDM', 'BMM', 'BC', 'PerR', 'TnT', 'TM']
-    baseLangSpecFile = '/Users/markus/Work/Research/Projects/Paper/2017-08-28_MODELS2018/MODELS18_Repo/eval/jupyter/data/compEfficiency/tmp.cfr'
+    baseLangSpecFile = os.path.abspath('../eval/raw/compEfficiency/tmp.cfr')
 
-    with open('compEffortData.csv', 'w') as csvfile:
+    with open('../eval/compEffortData.csv', 'w') as csvfile:
         writer = csv.writer(csvfile)
         header = ['system','alloy','choco','bound']
         writer.writerow(header)
@@ -29,7 +33,7 @@ def main(arguments):
         for spec in specs:
             row = []
             
-            specFile = specFileDir + spec + '.cfr'
+            specFile = os.path.join(specFileDir, spec + '.cfr')
             # transform to base lang
             subprocess.call(['java','-jar',boundanalyzer,'-b',baseLangSpecFile,'-i',specFile,])
 
@@ -38,9 +42,9 @@ def main(arguments):
             measureBound = []
             # run for 5 times and take minimum value
             for run in range(0,runs):
-                # due to a specification error for spec EDM_Intro, do not use to base language.
-                inputSpec = specFile if spec in ['EDM_Intro','driverPowerWindow'] else baseLangSpecFile
-                measureAlloy.append(evalAlloyIG(inputSpec) if spec not in ['driverPowerWindow'] else '*')
+                # due to a specification error for spec EDM, do not use to base language.
+                inputSpec = specFile if spec in ['EDM','BC'] else baseLangSpecFile
+                measureAlloy.append(evalAlloyIG(inputSpec) if spec not in ['BC'] else '*')
                 measureChoco.append(evalChocosolver(inputSpec))
                 measureBound.append(evalBoundanalyzer(inputSpec))
             row.append(spec)
@@ -76,18 +80,6 @@ def evalBoundanalyzer(specFile):
     timeUpperBound = jsonSpec['analysisResults'][0]['ubIlpRes']['statistics']['duration']
     return (end - start) - timeUpperBound/1000
 
-
-    # call(["echo 'q' | /Users/markus/Developer/bin/clafer/claferIG", "/Users/markus/Developer/Projects/Cardygan/boundanalyzer/src/test/resources/clafer/eval/EDM_Intro.cfr"])
-    # parser = argparse.ArgumentParser(
-    #     description=__doc__,
-    #     formatter_class=argparse.RawDescriptionHelpFormatter)
-    # parser.add_argument('infile', help="Input file", type=argparse.FileType('r'))
-    # parser.add_argument('-o', '--outfile', help="Output file",
-    #                     default=sys.stdout, type=argparse.FileType('w'))
-
-    # args = parser.parse_args(arguments)
-
-    # print(args)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
