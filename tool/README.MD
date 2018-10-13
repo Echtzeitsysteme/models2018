@@ -18,7 +18,7 @@ Following dependencies must be installed:
 ## Usage
 To run *Boundanalyzer* execute following command from the command line to retrieve available command line options:
 
-`java -jar boundanalyzer-0.0.1.jar -h`
+`java -jar boundanalyzer-0.1.1.jar -h`
 
 **Output:**
 ```
